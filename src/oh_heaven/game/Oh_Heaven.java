@@ -126,18 +126,19 @@ public class Oh_Heaven extends CardGame {
   private Location trumpsActorLocation = new Location(50, 50);
   private boolean enforceRules=false;
 
+  // Game always has 4 players according to the spec.
   private Player[] players = new Player[4];
 
   public void setStatus(String string) { setStatusText(string); }
   
 	private int[] scores = new int[nbPlayers];
+	// Note: tricks is the "cards on the board", so this shouldn't be stored by the players.
 	private int[] tricks = new int[nbPlayers];
 	private int[] bids = new int[nbPlayers];
 
 	Font bigFont = new Font("Serif", Font.BOLD, 36);
 
 	private void initPlayers() {
-		// Change this later
 		players[0] = new InteractivePlayer(0);
 		for(int i = 1; i < nbPlayers; i++) {
 			players[i] = new NPC(i);
@@ -260,7 +261,8 @@ public class Oh_Heaven extends CardGame {
 		}
 	}
 
-	Card curPlayerSelected;
+	// An attribute storing the card that the current player selected.
+	private Card curPlayerSelected;
 
 	private void playRound() {
 		// Select and display trump suit
