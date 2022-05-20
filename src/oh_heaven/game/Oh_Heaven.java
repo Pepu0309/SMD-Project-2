@@ -260,6 +260,8 @@ public class Oh_Heaven extends CardGame {
 		}
 	}
 
+	Card curPlayerSelected;
+
 	private void playRound() {
 		// Select and display trump suit
 		final Suit trumps = randomEnum(Suit.class);
@@ -273,7 +275,6 @@ public class Oh_Heaven extends CardGame {
 		int nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
 		initBids(trumps, nextPlayer);
 
-		Card curPlayerSelected;
 		Player interactivePlayer = players[0];
 
 		// initScore();
@@ -283,26 +284,10 @@ public class Oh_Heaven extends CardGame {
 			curPlayerSelected = null;
 			// if (false) {
 			if (0 == nextPlayer) {  // Select lead depending on player type
-				// This is the interactive player, delay and setStatus are methods of GameGrid class so unlikely
-				// we can move them around. Can make this chunk and the NPC move chunk functions too, code is used
-				// twice.
-
-				// Tell the interactive player to reset their previous move as it will store its move from last turn.
-				// It needs to be set to null, so it can constantly poll their player.
-				interactivePlayer.resetMove();
-				interactivePlayer.getPlayerHand().setTouchEnabled(true);
-				setStatus("Player 0 double-click on card to lead.");
-				// This while loop constantly checks for the interactive playing double-clicking to play a move.
-				do {
-					curPlayerSelected = interactivePlayer.playMove();
-					delay(100);
-				} while (curPlayerSelected == null);
+				getInteractivePlayerMove();
 			// Random player plays a random card
 			} else {
-				setStatusText("Player " + nextPlayer + " thinking...");
-				delay(thinkingTime);
-				// This is NPC player picking their next move
-				curPlayerSelected = players[nextPlayer].playMove();
+				getNPCMove(nextPlayer);
 			}
 			// Lead with curPlayerSelected card
 				trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -319,18 +304,9 @@ public class Oh_Heaven extends CardGame {
 				curPlayerSelected = null;
 				// if (false) {
 				if (0 == nextPlayer) {
-					interactivePlayer.resetMove();
-					interactivePlayer.getPlayerHand().setTouchEnabled(true);
-					setStatus("Player 0 double-click on card to lead.");
-					do {
-						curPlayerSelected = interactivePlayer.playMove();
-						delay(100);
-					} while (curPlayerSelected == null);
+					getInteractivePlayerMove();
 				} else {
-					setStatusText("Player " + nextPlayer + " thinking...");
-					delay(thinkingTime);
-					// Modify this line to return the card the players selected
-					curPlayerSelected = players[nextPlayer].playMove();
+					getNPCMove(nextPlayer);
 				}
 				// Follow with curPlayerSelected card
 					trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -377,4 +353,28 @@ public class Oh_Heaven extends CardGame {
 		removeActor(trumpsActor);
 	}
 
+	private void getInteractivePlayerMove() {
+		// This is the interactive player, delay and setStatus are methods of GameGrid class so unlikely
+		// we can move them around.
+
+		// Interactive player is player 0.
+		Player interactivePlayer = players[0];
+		// Tell the interactive player to reset their previous move as it will store its move from last turn.
+		// It needs to be set to null, so it can constantly poll their player.
+		interactivePlayer.resetMove();
+		interactivePlayer.getPlayerHand().setTouchEnabled(true);
+		setStatus("Player 0 double-click on card to lead.");
+		// This while loop constantly checks for the interactive playing double-clicking to play a move.
+		do {
+			curPlayerSelected = interactivePlayer.playMove();
+			delay(100);
+		} while (curPlayerSelected == null);
+	}
+
+	private void getNPCMove(int curNPCPlayerNum) {
+		setStatusText("Player " + curNPCPlayerNum + " thinking...");
+		delay(thinkingTime);
+		// This is NPC player picking their next move
+		curPlayerSelected = players[curNPCPlayerNum].playMove();
+	}
 }
