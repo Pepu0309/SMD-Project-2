@@ -34,6 +34,10 @@ public abstract class Player {
 
     public abstract Card playMove();
 
+    public void resetMove() {
+        this.selected = null;
+    }
+
     public Hand getPlayerHand() {
         return playerHand;
     }

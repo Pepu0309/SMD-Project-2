@@ -126,7 +126,7 @@ public class Oh_Heaven extends CardGame {
   private Location trumpsActorLocation = new Location(50, 50);
   private boolean enforceRules=false;
 
-  private Player[] players;
+  private Player[] players = new Player[4];
 
   public void setStatus(String string) { setStatusText(string); }
   
@@ -138,9 +138,18 @@ public class Oh_Heaven extends CardGame {
 
 	private void initPlayers() {
 		// Change this later
-		for(int i = 0; i < nbPlayers; i++) {
-			players[i] = new Player(i);
+		players[0] = new InteractivePlayer(0);
+		for(int i = 1; i < nbPlayers; i++) {
+			players[i] = new NPC(i);
 		}
+		// Debugging code for checking type of players.
+//		for(int i = 0; i < nbPlayers; i++) {
+//			if(players[i] instanceof InteractivePlayer) {
+//				System.out.println("player " + i + " is an instance of InteractivePlayer");
+//			} else if (players[i] instanceof NPC) {
+//				System.out.println("player " + i + " is an instance of NPC");
+//			}
+//		}
 	}
 
 	private void initScore() {
@@ -253,9 +262,9 @@ public class Oh_Heaven extends CardGame {
 
 	private void playRound() {
 		// Select and display trump suit
-			final Suit trumps = randomEnum(Suit.class);
-			final Actor trumpsActor = new Actor("sprites/"+trumpImage[trumps.ordinal()]);
-			addActor(trumpsActor, trumpsActorLocation);
+		final Suit trumps = randomEnum(Suit.class);
+		final Actor trumpsActor = new Actor("sprites/"+trumpImage[trumps.ordinal()]);
+		addActor(trumpsActor, trumpsActorLocation);
 		// End trump suit
 		Hand trick;
 		int winner;
@@ -275,16 +284,25 @@ public class Oh_Heaven extends CardGame {
 			// if (false) {
 			if (0 == nextPlayer) {  // Select lead depending on player type
 				// This is the interactive player, delay and setStatus are methods of GameGrid class so unlikely
-				// we can move them around.
+				// we can move them around. Can make this chunk and the NPC move chunk functions too, code is used
+				// twice.
+
+				// Tell the interactive player to reset their previous move as it will store its move from last turn.
+				// It needs to be set to null, so it can constantly poll their player.
+				interactivePlayer.resetMove();
 				interactivePlayer.getPlayerHand().setTouchEnabled(true);
 				setStatus("Player 0 double-click on card to lead.");
-				while (null == interactivePlayer.getPlayerHand()) delay(100);
+				// This while loop constantly checks for the interactive playing double-clicking to play a move.
+				do {
+					curPlayerSelected = interactivePlayer.playMove();
+					delay(100);
+				} while (curPlayerSelected == null);
 			// Random player plays a random card
 			} else {
 				setStatusText("Player " + nextPlayer + " thinking...");
 				delay(thinkingTime);
-				// Modify this line, this is NPC player behaviour
-				curPlayerSelected = randomCard(players[nextPlayer].getPlayerHand());
+				// This is NPC player picking their next move
+				curPlayerSelected = players[nextPlayer].playMove();
 			}
 			// Lead with curPlayerSelected card
 				trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -301,14 +319,18 @@ public class Oh_Heaven extends CardGame {
 				curPlayerSelected = null;
 				// if (false) {
 				if (0 == nextPlayer) {
+					interactivePlayer.resetMove();
 					interactivePlayer.getPlayerHand().setTouchEnabled(true);
-					setStatus("Player 0 double-click on card to follow.");
-					while (null == interactivePlayer.playMove()) delay(100);
+					setStatus("Player 0 double-click on card to lead.");
+					do {
+						curPlayerSelected = interactivePlayer.playMove();
+						delay(100);
+					} while (curPlayerSelected == null);
 				} else {
 					setStatusText("Player " + nextPlayer + " thinking...");
 					delay(thinkingTime);
 					// Modify this line to return the card the players selected
-					curPlayerSelected = randomCard(players[nextPlayer].getPlayerHand());
+					curPlayerSelected = players[nextPlayer].playMove();
 				}
 				// Follow with curPlayerSelected card
 					trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
