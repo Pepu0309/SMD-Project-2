@@ -2,10 +2,13 @@ package oh_heaven.game;
 
 import ch.aplu.jcardgame.*;
 
-public class Player {
-    public Hand playerHand;
-    public int playerNumber;
-    public Card selected;
+public abstract class Player {
+    private int playerNumber;
+
+    // "Players must not share information directly and must store their own information about the game they are
+    // playing."
+    private Hand playerHand;
+    protected Card selected = null;
 
     public Player(int playerNumber) {
         this.playerNumber = playerNumber;
@@ -28,4 +31,11 @@ public class Player {
         playerHand.setTargetArea(targetArea);
         playerHand.draw();
     }
+
+    public abstract Card playMove();
+
+    public Hand getPlayerHand() {
+        return playerHand;
+    }
+
 }

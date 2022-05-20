@@ -121,7 +121,7 @@ public class Oh_Heaven extends CardGame {
   private final Location trickLocation = new Location(350, 350);
   private final Location textLocation = new Location(350, 450);
   private final int thinkingTime = 2000;
-  private Hand[] hands;
+  //private Hand[] hands;
   private Location hideLocation = new Location(-500, - 500);
   private Location trumpsActorLocation = new Location(50, 50);
   private boolean enforceRules=false;
@@ -137,6 +137,7 @@ public class Oh_Heaven extends CardGame {
 	Font bigFont = new Font("Serif", Font.BOLD, 36);
 
 	private void initPlayers() {
+		// Change this later
 		for(int i = 0; i < nbPlayers; i++) {
 			players[i] = new Player(i);
 		}
@@ -197,8 +198,6 @@ public class Oh_Heaven extends CardGame {
 		//  }
 	 }
 
-	private Card selected;
-
 	private void initRound() {
 		//hands = new Hand[nbPlayers];
 //		for (int i = 0; i < nbPlayers; i++) {
@@ -209,7 +208,7 @@ public class Oh_Heaven extends CardGame {
 			players[i].initialisePlayerHand(deck);
 		}
 
-		dealingOut(hands, nbPlayers, nbStartCards);
+		dealingOut(nbPlayers, nbStartCards);
 		for (int i = 0; i < nbPlayers; i++) {
 			players[i].sortHand();
 		}
@@ -236,7 +235,7 @@ public class Oh_Heaven extends CardGame {
 //	      hands[i].setVerso(true);			// You do not need to use or change this code.
 		// End graphics
 	 }
-	private void dealingOut(Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
+	private void dealingOut(int nbPlayers, int nbCardsPerPlayer) {
 		Hand pack = deck.toHand(false);
 		// pack.setView(Oh_Heaven.this, new RowLayout(hideLocation, 0));
 		for (int i = 0; i < nbCardsPerPlayer; i++) {
@@ -264,52 +263,61 @@ public class Oh_Heaven extends CardGame {
 		Suit lead;
 		int nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
 		initBids(trumps, nextPlayer);
+
+		Card curPlayerSelected;
+		Player interactivePlayer = players[0];
+
 		// initScore();
 		for (int i = 0; i < nbPlayers; i++) updateScore(i);
 		for (int i = 0; i < nbStartCards; i++) {
 			trick = new Hand(deck);
-			selected = null;
+			curPlayerSelected = null;
 			// if (false) {
 			if (0 == nextPlayer) {  // Select lead depending on player type
-				hands[0].setTouchEnabled(true);
+				// This is the interactive player, delay and setStatus are methods of GameGrid class so unlikely
+				// we can move them around.
+				interactivePlayer.getPlayerHand().setTouchEnabled(true);
 				setStatus("Player 0 double-click on card to lead.");
-				while (null == selected) delay(100);
+				while (null == interactivePlayer.getPlayerHand()) delay(100);
+			// Random player plays a random card
 			} else {
 				setStatusText("Player " + nextPlayer + " thinking...");
 				delay(thinkingTime);
-				selected = randomCard(hands[nextPlayer]);
+				// Modify this line, this is NPC player behaviour
+				curPlayerSelected = randomCard(players[nextPlayer].getPlayerHand());
 			}
-			// Lead with selected card
+			// Lead with curPlayerSelected card
 				trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
 				trick.draw();
-				selected.setVerso(false);
+				curPlayerSelected.setVerso(false);
 				// No restrictions on the card being lead
-				lead = (Suit) selected.getSuit();
-				selected.transfer(trick, true); // transfer to trick (includes graphic effect)
+				lead = (Suit) curPlayerSelected.getSuit();
+				curPlayerSelected.transfer(trick, true); // transfer to trick (includes graphic effect)
 				winner = nextPlayer;
-				winningCard = selected;
+				winningCard = curPlayerSelected;
 			// End Lead
 			for (int j = 1; j < nbPlayers; j++) {
 				if (++nextPlayer >= nbPlayers) nextPlayer = 0;  // From last back to first
-				selected = null;
+				curPlayerSelected = null;
 				// if (false) {
 				if (0 == nextPlayer) {
-					hands[0].setTouchEnabled(true);
+					interactivePlayer.getPlayerHand().setTouchEnabled(true);
 					setStatus("Player 0 double-click on card to follow.");
-					while (null == selected) delay(100);
+					while (null == interactivePlayer.playMove()) delay(100);
 				} else {
 					setStatusText("Player " + nextPlayer + " thinking...");
 					delay(thinkingTime);
-					selected = randomCard(hands[nextPlayer]);
+					// Modify this line to return the card the players selected
+					curPlayerSelected = randomCard(players[nextPlayer].getPlayerHand());
 				}
-				// Follow with selected card
+				// Follow with curPlayerSelected card
 					trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
 					trick.draw();
-					selected.setVerso(false);  // In case it is upside down
+					curPlayerSelected.setVerso(false);  // In case it is upside down
 					// Check: Following card must follow suit if possible
-						if (selected.getSuit() != lead && hands[nextPlayer].getNumberOfCardsWithSuit(lead) > 0) {
+						if (curPlayerSelected.getSuit() != lead && players[nextPlayer].getPlayerHand().getNumberOfCardsWithSuit(lead) > 0) {
 							 // Rule violation
-							 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
+							 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + curPlayerSelected;
 							 System.out.println(violation);
 							 if (enforceRules)
 								 try {
@@ -321,18 +329,18 @@ public class Oh_Heaven extends CardGame {
 									}
 						 }
 					// End Check
-					 selected.transfer(trick, true); // transfer to trick (includes graphic effect)
+					 curPlayerSelected.transfer(trick, true); // transfer to trick (includes graphic effect)
 					 System.out.println("winning: " + winningCard);
-					 System.out.println(" played: " + selected);
+					 System.out.println(" played: " + curPlayerSelected);
 					 // System.out.println("winning: suit = " + winningCard.getSuit() + ", rank = " + (13 - winningCard.getRankId()));
-					 // System.out.println(" played: suit = " +    selected.getSuit() + ", rank = " + (13 -    selected.getRankId()));
+					 // System.out.println(" played: suit = " +    curPlayerSelected.getSuit() + ", rank = " + (13 -    curPlayerSelected.getRankId()));
 					 if ( // beat current winner with higher card
-						 (selected.getSuit() == winningCard.getSuit() && rankGreater(selected, winningCard)) ||
+						 (curPlayerSelected.getSuit() == winningCard.getSuit() && rankGreater(curPlayerSelected, winningCard)) ||
 						  // trumped when non-trump was winning
-						 (selected.getSuit() == trumps && winningCard.getSuit() != trumps)) {
+						 (curPlayerSelected.getSuit() == trumps && winningCard.getSuit() != trumps)) {
 						 System.out.println("NEW WINNER");
 						 winner = nextPlayer;
-						 winningCard = selected;
+						 winningCard = curPlayerSelected;
 					 }
 				// End Follow
 			}
