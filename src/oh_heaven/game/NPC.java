@@ -16,9 +16,19 @@ public class NPC extends Player{
         super(playerNumber);
     }
 
-    public NPC(int playerNumber, String NPCStrategyName) {
+    public NPC(int playerNumber, String NPCStrategyName) throws Exception{
         super(playerNumber);
-        strategy = NPCStrategyFactory.getInstance().createStrategy(NPCStrategyName);
+        try {
+            strategy = NPCStrategyFactory.getInstance().createStrategy(NPCStrategyName);
+            if(strategy == null) {
+                throw new Exception("Invalid strategy");
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.out.println(e);
+            System.exit(0);
+        }
+
     }
 
     public static Card randomCard(Hand hand){

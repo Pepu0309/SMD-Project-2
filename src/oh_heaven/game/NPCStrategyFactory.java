@@ -11,14 +11,14 @@ public class NPCStrategyFactory {
 
     public NPCStrategy createStrategy(String NPCStrategyName) {
         // Modify this later when legal and smart are created.
-        if(NPCStrategyName == "legal") {
+        if(NPCStrategyName.equals("random")) {
             return new NPCRandomStrategy();
-        } else if (NPCStrategyName == "smart") {
+        } else if(NPCStrategyName.equals("legal")) {
             return new NPCRandomStrategy();
-        // Otherwise, create an NPC with a random strategy. This behaviour also means that an NPC with random
-        // strategy will be created with NPCStrategyName == "random" or something else (which would be invalid).
+        } else if (NPCStrategyName.equals("smart")) {
+            return new NPCRandomStrategy();
         } else {
-            return new NPCRandomStrategy();
+           return null;
         }
     }
 }
