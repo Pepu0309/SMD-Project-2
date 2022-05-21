@@ -10,8 +10,15 @@ public class NPC extends Player{
     static public final int seed = 30006;
     static final Random random = new Random(seed);
 
+    public NPCStrategy strategy;
+
     public NPC(int playerNumber) {
         super(playerNumber);
+    }
+
+    public NPC(int playerNumber, String NPCStrategyName) {
+        super(playerNumber);
+        strategy = NPCStrategyFactory.getInstance().createStrategy(NPCStrategyName);
     }
 
     public static Card randomCard(Hand hand){
@@ -20,6 +27,7 @@ public class NPC extends Player{
     }
 
     public Card playMove() {
+        // selected = strategy.determineMove(Hand hand);
         selected = randomCard(super.getPlayerHand());
         return selected;
     }

@@ -32,5 +32,4 @@ public class InteractivePlayer extends Player{
         return this.selected;
     }
 
-
 }

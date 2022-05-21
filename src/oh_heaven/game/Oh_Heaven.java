@@ -139,6 +139,7 @@ public class Oh_Heaven extends CardGame {
 	Font bigFont = new Font("Serif", Font.BOLD, 36);
 
 	private void initPlayers() {
+		// Modify later to create players via properties loader.
 		players[0] = new InteractivePlayer(0);
 		for(int i = 1; i < nbPlayers; i++) {
 			players[i] = new NPC(i);
@@ -285,7 +286,7 @@ public class Oh_Heaven extends CardGame {
 			trick = new Hand(deck);
 			curPlayerSelected = null;
 			// if (false) {
-			if (0 == nextPlayer) {  // Select lead depending on player type
+			if (players[nextPlayer] instanceof InteractivePlayer) {  // Select lead depending on player type
 				getInteractivePlayerMove();
 			// Random player plays a random card
 			} else {
@@ -305,7 +306,7 @@ public class Oh_Heaven extends CardGame {
 				if (++nextPlayer >= nbPlayers) nextPlayer = 0;  // From last back to first
 				curPlayerSelected = null;
 				// if (false) {
-				if (0 == nextPlayer) {
+				if (players[nextPlayer] instanceof InteractivePlayer) {
 					getInteractivePlayerMove();
 				} else {
 					getNPCMove(nextPlayer);
