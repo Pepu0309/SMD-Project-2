@@ -7,8 +7,7 @@ import java.util.Random;
 
 public class NPCRandomStrategy implements NPCStrategy{
     // Place this temporarily here for testing.
-    static public final int seed = 30006;
-    static final Random random = new Random(seed);
+    static final Random random = new Random(Oh_Heaven.seed);
 
     public Card determineMove(Hand hand) {
         int x = random.nextInt(hand.getNumberOfCards());

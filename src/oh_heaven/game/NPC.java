@@ -16,7 +16,7 @@ public class NPC extends Player{
         super(playerNumber);
     }
 
-    public NPC(int playerNumber, String NPCStrategyName) throws Exception{
+    public NPC(int playerNumber, String NPCStrategyName) throws Exception {
         super(playerNumber);
         try {
             strategy = NPCStrategyFactory.getInstance().createStrategy(NPCStrategyName);

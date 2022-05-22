@@ -124,7 +124,9 @@ public class Oh_Heaven extends CardGame {
   //private Hand[] hands;
   private Location hideLocation = new Location(-500, - 500);
   private Location trumpsActorLocation = new Location(50, 50);
-  private boolean enforceRules=false;
+
+  // Make enforceRules static, so it applies to the whole game.
+  private static boolean enforceRules = false;
 
   // Game always has 4 players according to the spec.
   private Player[] players = new Player[4];
@@ -274,6 +276,9 @@ public class Oh_Heaven extends CardGame {
 		Hand trick;
 		int winner;
 		Card winningCard;
+		// Either make it a static attribute so other players know the lead, or use the observer pattern
+		// to make players know of the current lead and so players can store them (latter seems to be the intended
+		// approach since players can't access shared information).
 		Suit lead;
 		int nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
 		initBids(trumps, nextPlayer);
@@ -316,19 +321,20 @@ public class Oh_Heaven extends CardGame {
 					trick.draw();
 					curPlayerSelected.setVerso(false);  // In case it is upside down
 					// Check: Following card must follow suit if possible
-						if (curPlayerSelected.getSuit() != lead && players[nextPlayer].getPlayerHand().getNumberOfCardsWithSuit(lead) > 0) {
-							 // Rule violation
-							 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + curPlayerSelected;
-							 System.out.println(violation);
-							 if (enforceRules)
-								 try {
-									 throw(new BrokeRuleException(violation));
-									} catch (BrokeRuleException e) {
-										e.printStackTrace();
-										System.out.println("A cheating player spoiled the game!");
-										System.exit(0);
-									}
-						 }
+					checkLegalMove(curPlayerSelected, lead, players[nextPlayer]);
+//					if (curPlayerSelected.getSuit() != lead && players[nextPlayer].getPlayerHand().getNumberOfCardsWithSuit(lead) > 0) {
+//						 // Rule violation
+//						 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + curPlayerSelected;
+//						 System.out.println(violation);
+//						 if (enforceRules)
+//							 try {
+//								 throw(new BrokeRuleException(violation));
+//								} catch (BrokeRuleException e) {
+//									e.printStackTrace();
+//									System.out.println("A cheating player spoiled the game!");
+//									System.exit(0);
+//								}
+//					 }
 					// End Check
 					 curPlayerSelected.transfer(trick, true); // transfer to trick (includes graphic effect)
 					 System.out.println("winning: " + winningCard);
@@ -379,5 +385,22 @@ public class Oh_Heaven extends CardGame {
 		delay(thinkingTime);
 		// This is NPC player picking their next move
 		curPlayerSelected = players[curNPCPlayerNum].playMove();
+	}
+
+	public static void checkLegalMove(Card curPlayerSelected, Suit lead, Player playerPlayingMove) {
+		if (curPlayerSelected.getSuit() != lead && playerPlayingMove.getPlayerHand().getNumberOfCardsWithSuit(lead) > 0) {
+			// Rule violation
+			String violation = "Follow rule broken by player " + playerPlayingMove.getPlayerNumber() +
+					" attempting to play " + curPlayerSelected;
+			System.out.println(violation);
+			if (enforceRules)
+				try {
+					throw(new BrokeRuleException(violation));
+				} catch (BrokeRuleException e) {
+					e.printStackTrace();
+					System.out.println("A cheating player spoiled the game!");
+					System.exit(0);
+				}
+		}
 	}
 }

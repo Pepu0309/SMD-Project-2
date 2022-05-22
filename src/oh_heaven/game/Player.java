@@ -42,4 +42,7 @@ public abstract class Player {
         return playerHand;
     }
 
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
 }
