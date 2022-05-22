@@ -6,9 +6,6 @@ import ch.aplu.jcardgame.Hand;
 import java.util.Random;
 
 public class NPC extends Player{
-    // Place this temporarily here for testing.
-    static public final int seed = 30006;
-    static final Random random = new Random(seed);
 
     public NPCStrategy strategy;
 
@@ -31,8 +28,10 @@ public class NPC extends Player{
 
     }
 
+    // Remove this when property loader is implemented and creation of strategy is done.
     public static Card randomCard(Hand hand){
-        int x = random.nextInt(hand.getNumberOfCards());
+        int x = Oh_Heaven.random.nextInt(hand.getNumberOfCards());
+        System.out.println(x);
         return hand.get(x);
     }
 

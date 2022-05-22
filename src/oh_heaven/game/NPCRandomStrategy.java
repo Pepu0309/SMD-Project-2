@@ -6,11 +6,10 @@ import ch.aplu.jcardgame.Hand;
 import java.util.Random;
 
 public class NPCRandomStrategy implements NPCStrategy{
-    // Place this temporarily here for testing.
-    static final Random random = new Random(Oh_Heaven.seed);
 
     public Card determineMove(Hand hand) {
-        int x = random.nextInt(hand.getNumberOfCards());
+        int x = Oh_Heaven.random.nextInt(hand.getNumberOfCards());
+        System.out.println(x);
         return hand.get(x);
     }
 }

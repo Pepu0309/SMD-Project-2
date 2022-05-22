@@ -29,20 +29,39 @@ public class Oh_Heaven extends CardGame {
 		super(700, 700, 30);
 		setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
-		initScores();
-		initScore();
 		initPlayers();
+		initScoresDisplay();
+		//initScore();
+
 		for (int i=0; i <nbRounds; i++) {
 			initTricks();
 			initRound();
 			playRound();
 			updateScores();
 		};
-		for (int i=0; i <nbPlayers; i++) updateScore(i);
-		int maxScore = 0;
-		for (int i = 0; i <nbPlayers; i++) if (scores[i] > maxScore) maxScore = scores[i];
+
+		for (int i=0; i <nbPlayers; i++) {
+			updateScoreDisplay(i);
+		}
+
+		// Determining the highest score out of all the players
+		int maxScore = 0, curPlayerScore = 0;
+		for (int i = 0; i <nbPlayers; i++) {
+			curPlayerScore = players[i].getPlayerScore();
+			if (curPlayerScore > maxScore) {
+				maxScore = curPlayerScore;
+			}
+		}
+
+		// Determine all the winners if there is a tie
 		Set <Integer> winners = new HashSet<Integer>();
-		for (int i = 0; i <nbPlayers; i++) if (scores[i] == maxScore) winners.add(i);
+		for (int i = 0; i < nbPlayers; i++) {
+			if (curPlayerScore == maxScore) {
+				winners.add(i);
+			}
+		}
+
+		// Display winner information
 		String winText;
 		if (winners.size() == 1) {
 			winText = "Game over. Winner is player: " +
@@ -57,86 +76,79 @@ public class Oh_Heaven extends CardGame {
 		refresh();
 	}
 
-	public enum Suit
-  {
-    SPADES, HEARTS, DIAMONDS, CLUBS
-  }
+	public enum Suit {
+		  SPADES, HEARTS, DIAMONDS, CLUBS
+  	}
 
-  public enum Rank
-  {
-    // Reverse order of rank importance (see rankGreater() below)
-	// Order of cards is tied to card images
-	ACE, KING, QUEEN, JACK, TEN, NINE, EIGHT, SEVEN, SIX, FIVE, FOUR, THREE, TWO
-  }
+  	public enum Rank {
+    	// Reverse order of rank importance (see rankGreater() below)
+		// Order of cards is tied to card images
+		ACE, KING, QUEEN, JACK, TEN, NINE, EIGHT, SEVEN, SIX, FIVE, FOUR, THREE, TWO
+  	}
   
-  final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
+  	final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
 
-  static public final int seed = 30006;
-  static final Random random = new Random(seed);
-  
-  // return random Enum value
-  public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
-      int x = random.nextInt(clazz.getEnumConstants().length);
-      return clazz.getEnumConstants()[x];
-  }
+  	static public final int seed = 30006;
+  	static final Random random = new Random(seed);
 
-  // return random Card from Hand
-  public static Card randomCard(Hand hand){
-      int x = random.nextInt(hand.getNumberOfCards());
-      return hand.get(x);
-  }
- 
+  	// return random Enum value
+  	public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
+	  	int x = random.nextInt(clazz.getEnumConstants().length);
+	  	return clazz.getEnumConstants()[x];
+ 	 }
+
+  	// return random Card from Hand
+  	public static Card randomCard(Hand hand){
+	  	int x = random.nextInt(hand.getNumberOfCards());
+	  	return hand.get(x);
+  	}
+
   // return random Card from ArrayList
-  public static Card randomCard(ArrayList<Card> list){
-      int x = random.nextInt(list.size());
-      return list.get(x);
-  }
-  
-  public boolean rankGreater(Card card1, Card card2) {
-	  return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
-  }
-	 
-  private final String version = "1.0";
-  public final int nbPlayers = 4;
-  public final int nbStartCards = 13;
-  public final int nbRounds = 3;
-  public final int madeBidBonus = 10;
-  private final int handWidth = 400;
-  private final int trickWidth = 40;
-  private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
-  private final Location[] handLocations = {
+  	public static Card randomCard(ArrayList<Card> list){
+	  	int x = random.nextInt(list.size());
+	  	return list.get(x);
+  	}
+
+  	public boolean rankGreater(Card card1, Card card2) {
+		  return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
+ 	 }
+
+  	private final String version = "1.0";
+	public static final int nbPlayers = 4;
+ 	public static final int nbStartCards = 13;
+ 	public final int nbRounds = 3;
+  	public static final int madeBidBonus = 10;
+  	private final int handWidth = 400;
+  	private final int trickWidth = 40;
+  	private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
+  	private final Location[] handLocations = {
 			  new Location(350, 625),
 			  new Location(75, 350),
 			  new Location(350, 75),
 			  new Location(625, 350)
-	  };
-  private final Location[] scoreLocations = {
+	  	};
+  	private final Location[] scoreLocations = {
 			  new Location(575, 675),
 			  new Location(25, 575),
 			  new Location(575, 25),
 			  // new Location(650, 575)
 			  new Location(575, 575)
-	  };
-  private Actor[] scoreActors = {null, null, null, null };
-  private final Location trickLocation = new Location(350, 350);
-  private final Location textLocation = new Location(350, 450);
-  private final int thinkingTime = 2000;
-  //private Hand[] hands;
-  private Location hideLocation = new Location(-500, - 500);
-  private Location trumpsActorLocation = new Location(50, 50);
+	  	};
+  	private Actor[] scoreActors = {null, null, null, null };
+  	private final Location trickLocation = new Location(350, 350);
+  	private final Location textLocation = new Location(350, 450);
+  	private final int thinkingTime = 2000;
+  	//private Hand[] hands;
+  	private Location hideLocation = new Location(-500, - 500);
+  	private Location trumpsActorLocation = new Location(50, 50);
 
-  // Make enforceRules static, so it applies to the whole game.
-  private static boolean enforceRules = false;
+  	// Make enforceRules static, so it applies to the whole game.
+  	private static boolean enforceRules = false;
 
-  // Game always has 4 players according to the spec.
-  private Player[] players = new Player[4];
+  	// Game always has 4 players according to the spec.
+  	private Player[] players = new Player[nbPlayers];
 
-  public void setStatus(String string) { setStatusText(string); }
-  
-	private int[] scores = new int[nbPlayers];
-	// Note: tricks is the "cards on the board", so this shouldn't be stored by the players.
-	private int[] tricks = new int[nbPlayers];
-	private int[] bids = new int[nbPlayers];
+  	public void setStatus(String string) { setStatusText(string); }
 
 	Font bigFont = new Font("Serif", Font.BOLD, 36);
 
@@ -147,47 +159,63 @@ public class Oh_Heaven extends CardGame {
 			players[i] = new NPC(i);
 		}
 		// Debugging code for checking type of players.
-//		for(int i = 0; i < nbPlayers; i++) {
-//			if(players[i] instanceof InteractivePlayer) {
-//				System.out.println("player " + i + " is an instance of InteractivePlayer");
-//			} else if (players[i] instanceof NPC) {
-//				System.out.println("player " + i + " is an instance of NPC");
-//			}
-//		}
+	//		for(int i = 0; i < nbPlayers; i++) {
+	//			if(players[i] instanceof InteractivePlayer) {
+	//				System.out.println("player " + i + " is an instance of InteractivePlayer");
+	//			} else if (players[i] instanceof NPC) {
+	//				System.out.println("player " + i + " is an instance of NPC");
+	//			}
+	//		}
 	}
 
-	private void initScore() {
+//	private void initScore() {
+//		 for (int i = 0; i < nbPlayers; i++) {
+//			 // scores[i] = 0;
+//			 String text = "[" + String.valueOf(scores[i]) + "]" + String.valueOf(tricks[i]) + "/" + String.valueOf(bids[i]);
+//			 scoreActors[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
+//			 addActor(scoreActors[i], scoreLocations[i]);
+//		 }
+//	  }
+
+	// Update the display of the score and the tricks won of the player corresponding to the number passed in as '
+	// argument to the method.
+	private void updateScoreDisplay(int playerNum) {
+		removeActor(scoreActors[playerNum]);
+		String text = "[" + String.valueOf(players[playerNum].getPlayerScore()) + "]" +
+				String.valueOf(players[playerNum].getTricksWon()) + "/" +
+				String.valueOf(players[playerNum].getPlayerBid());
+		scoreActors[playerNum] = new TextActor(text, Color.WHITE, bgColor, bigFont);
+		addActor(scoreActors[playerNum], scoreLocations[playerNum]);
+	}
+
+	// The responsibility of initialising player's scores to 0 at the start of the game given to the constructor
+	// of Player class. This method displays all the scores of the players at the start (with a loop).
+	private void initScoresDisplay() {
 		 for (int i = 0; i < nbPlayers; i++) {
-			 // scores[i] = 0;
-			 String text = "[" + String.valueOf(scores[i]) + "]" + String.valueOf(tricks[i]) + "/" + String.valueOf(bids[i]);
+			 // Display the initial scores of players.
+			 String text = "[" + String.valueOf(players[i].getPlayerScore()) + "]" +
+					 String.valueOf(players[i].getTricksWon()) + "/" +
+					 String.valueOf(players[i].getPlayerBid());
 			 scoreActors[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
 			 addActor(scoreActors[i], scoreLocations[i]);
 		 }
-	  }
-
-	private void updateScore(int player) {
-		removeActor(scoreActors[player]);
-		String text = "[" + String.valueOf(scores[player]) + "]" + String.valueOf(tricks[player]) + "/" + String.valueOf(bids[player]);
-		scoreActors[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
-		addActor(scoreActors[player], scoreLocations[player]);
 	}
 
-	private void initScores() {
-		 for (int i = 0; i < nbPlayers; i++) {
-			 scores[i] = 0;
-		 }
-	}
-
+	// Don't need to update this method yet, because players will be storing their own tricks and bids later
 	private void updateScores() {
 		 for (int i = 0; i < nbPlayers; i++) {
-			 scores[i] += tricks[i];
-			 if (tricks[i] == bids[i]) scores[i] += madeBidBonus;
+//			 scores[i] += tricks[i];
+//			 if (tricks[i] == bids[i]) {
+//				 scores[i] += madeBidBonus;
+//			 }
+			 players[i].updatePlayerScore();
 		 }
 	}
 
+	// It's the start of a new round, set the tricks won of each player to 0.
 	private void initTricks() {
 		 for (int i = 0; i < nbPlayers; i++) {
-			 tricks[i] = 0;
+			 players[i].updateTricksWon(0);
 		 }
 	}
 
@@ -195,16 +223,14 @@ public class Oh_Heaven extends CardGame {
 		int total = 0;
 		for (int i = nextPlayer; i < nextPlayer + nbPlayers; i++) {
 			 int iP = i % nbPlayers;
-			 bids[iP] = nbStartCards / 4 + random.nextInt(2);
-			 total += bids[iP];
+			 players[iP].placeBid();
+//			 bids[iP] = nbStartCards / 4 + random.nextInt(2);
+			 total += players[iP].getPlayerBid();
 		 }
+		System.out.println("Total bid: " + total);
 		 if (total == nbStartCards) {  // Force last bid so not every bid possible
 			 int iP = (nextPlayer + nbPlayers) % nbPlayers;
-			 if (bids[iP] == 0) {
-				 bids[iP] = 1;
-			 } else {
-				 bids[iP] += random.nextBoolean() ? -1 : 1;
-			 }
+			 players[iP].enforcePlayerBid();
 		 }
 		// for (int i = 0; i < nbPlayers; i++) {
 		// 	 bids[i] = nbStartCards / 4 + 1;
@@ -232,6 +258,8 @@ public class Oh_Heaven extends CardGame {
 //				};
 //		hands[0].addCardListener(cardListener);
 		// graphics
+
+		// Change this to have the player store their own location later.
 		RowLayout[] layouts = new RowLayout[nbPlayers];
 		for (int i = 0; i < nbPlayers; i++) {
 			layouts[i] = new RowLayout(handLocations[i], handWidth);
@@ -247,7 +275,9 @@ public class Oh_Heaven extends CardGame {
 //	    for (int i = 1; i < nbPlayers; i++) // This code can be used to visually hide the cards in a hand (make them face down)
 //	      hands[i].setVerso(true);			// You do not need to use or change this code.
 		// End graphics
-	 }
+	}
+
+	// Deal cards to each player
 	private void dealingOut(int nbPlayers, int nbCardsPerPlayer) {
 		Hand pack = deck.toHand(false);
 		// pack.setView(Oh_Heaven.this, new RowLayout(hideLocation, 0));
@@ -257,9 +287,7 @@ public class Oh_Heaven extends CardGame {
 				Card dealt = randomCard(pack);
 				// System.out.println("Cards = " + dealt);
 				dealt.removeFromHand(false);
-				//hands[j].insert(dealt, false);
 				players[j].dealCard(dealt);
-				// dealt.transfer(hands[j], true);
 			}
 		}
 	}
@@ -267,6 +295,7 @@ public class Oh_Heaven extends CardGame {
 	// An attribute storing the card that the current player selected.
 	private Card curPlayerSelected;
 
+	// Play out the current round.
 	private void playRound() {
 		// Select and display trump suit
 		final Suit trumps = randomEnum(Suit.class);
@@ -281,12 +310,13 @@ public class Oh_Heaven extends CardGame {
 		// approach since players can't access shared information).
 		Suit lead;
 		int nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
+
 		initBids(trumps, nextPlayer);
 
 		Player interactivePlayer = players[0];
 
 		// initScore();
-		for (int i = 0; i < nbPlayers; i++) updateScore(i);
+		for (int i = 0; i < nbPlayers; i++) updateScoreDisplay(i);
 		for (int i = 0; i < nbStartCards; i++) {
 			trick = new Hand(deck);
 			curPlayerSelected = null;
@@ -356,8 +386,9 @@ public class Oh_Heaven extends CardGame {
 			trick.draw();
 			nextPlayer = winner;
 			setStatusText("Player " + nextPlayer + " wins trick.");
-			tricks[nextPlayer]++;
-			updateScore(nextPlayer);
+			// Call the wonTrick() method of the player that won the trick and increment their tricks won by 1.
+			players[nextPlayer].updateTricksWon(1);
+			updateScoreDisplay(nextPlayer);
 		}
 		removeActor(trumpsActor);
 	}
