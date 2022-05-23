@@ -1,8 +1,5 @@
 package oh_heaven.game;
 
-public interface PlayerObserver {
-    public void updateObservedPlayerScore(int observedPlayerScore);
-
-    // This one doesn't need an argument because it just increments by 1 everytime.
-    public void updateObservedPlayerTricksWon(int observedPlayerTricksWon);
+public interface PlayerObserver<T> {
+    public void update(int playerNum, T valueToUpdate, String type);
 }

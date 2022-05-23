@@ -160,11 +160,22 @@ public class Oh_Heaven extends CardGame {
 			strategy = properties.getProperty("players." + i);
 			if (strategy.equals("human")){
 				players[i] = new InteractivePlayer(i);
-			} else{
+			} else {
 				players[i] = new NPC(i, strategy);
 			}
 			players[i].setNbStartCards(nbStartCards);
 		}
+
+//		// Just for testing
+//		players[1] = new NPC(1, "smart");
+//		for(int i = 0; i < nbPlayers; i++) {
+//			if (i == 1) {
+//				continue;
+//			}
+//			players[i].addObserver();
+//		}
+
+
 		// Debugging code for checking type of players.
 	//		for(int i = 0; i < nbPlayers; i++) {
 	//			if(players[i] instanceof InteractivePlayer) {

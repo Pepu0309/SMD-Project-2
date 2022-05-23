@@ -5,25 +5,22 @@ import ch.aplu.jcardgame.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Player {
+public abstract class Player extends Publisher {
     private int playerNumber;
 
     // "Players must not share information directly and must store their own information about the game they are
     // playing."
-    private int playerScore;
+    private PlayerIntValue playerScore;
     private int tricksWon;
     private int playerBid;
-
 
     private int nbStartCards;
     private Hand playerHand;
     protected Card selected = null;
 
-    private List<PlayerObserver> playerObservers = new ArrayList<>();
-
     public Player(int playerNumber) {
         this.playerNumber = playerNumber;
-        this.playerScore = 0;
+        this.playerScore.setValue(0);
     }
 
     public void initialisePlayerHand(Deck deck) {
@@ -50,15 +47,6 @@ public abstract class Player {
         this.selected = null;
     }
 
-    public void addObserver(PlayerObserver playerObserver) {
-        playerObservers.add(playerObserver);
-    }
-
-    public void removeObserver(PlayerObserver playerObserver) {
-        playerObservers.remove(playerObserver);
-    }
-
-
     public Hand getPlayerHand() {
         return playerHand;
     }
@@ -68,21 +56,20 @@ public abstract class Player {
     }
 
     public int getPlayerScore() {
-        return playerScore;
+        return playerScore.getValue();
     }
 
     public void updatePlayerScore() {
+        int updateVal;
         // Update the player's score by their tricksWon this round
-        this.playerScore += this.tricksWon;
+        updateVal = this.playerScore.getValue() + this.tricksWon;
 
         if(this.tricksWon == this.playerBid) {
-            this.playerScore += Oh_Heaven.madeBidBonus;
+            updateVal = this.playerScore.getValue() + Oh_Heaven.madeBidBonus;
         }
 
-        // Then notify all the Listeners observing this player as per the Observer pattern.
-        for(int i = 0; i < playerObservers.size(); i++) {
-            playerObservers.get(i).updateObservedPlayerScore(this.playerScore);
-        }
+        this.playerScore.updateValue(updateVal, "score");
+
     }
 
     public int getTricksWon() {
@@ -91,8 +78,8 @@ public abstract class Player {
 
     public void updateTricksWon(int tricksWon) {
         this.tricksWon = tricksWon;
-        for(int i = 0; i < playerObservers.size(); i++) {
-            playerObservers.get(i).updateObservedPlayerTricksWon(tricksWon);
+        for(int i = 0; i < super.getPlayerObservers().size(); i++) {
+            super.getPlayerObservers().get(i).update(this.playerNumber, this.tricksWon, "tricks");
         }
     }
 
@@ -112,13 +99,11 @@ public abstract class Player {
             this.playerBid += Oh_Heaven.random.nextBoolean() ? -1 : 1;
         }
     }
-    public int getNbStartCards()
-    {
-        return nbStartCards;
-    }
 
     public void setNbStartCards(int nbStartCards)
     {
         this.nbStartCards = nbStartCards;
     }
+
+
 }

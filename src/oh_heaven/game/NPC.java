@@ -9,10 +9,6 @@ public class NPC extends Player{
 
     public NPCStrategy strategy;
 
-    public NPC(int playerNumber) {
-        super(playerNumber);
-    }
-
     public NPC(int playerNumber, String NPCStrategyName) throws Exception {
         super(playerNumber);
         try {
@@ -39,5 +35,9 @@ public class NPC extends Player{
         // selected = strategy.determineMove(Hand hand);
         selected = randomCard(super.getPlayerHand());
         return selected;
+    }
+
+    public NPCStrategy getStrategy() {
+        return strategy;
     }
 }

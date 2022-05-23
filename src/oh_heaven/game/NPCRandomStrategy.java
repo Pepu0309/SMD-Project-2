@@ -12,4 +12,5 @@ public class NPCRandomStrategy implements NPCStrategy{
         System.out.println(x);
         return hand.get(x);
     }
+
 }
