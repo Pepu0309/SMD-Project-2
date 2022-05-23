@@ -30,7 +30,7 @@ public class Oh_Heaven extends CardGame {
 		initGameParam(properties);
 		setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
-		initPlayers();
+		initPlayers(properties);
 		initScoresDisplay();
 		//initScore();
 
@@ -144,7 +144,7 @@ public class Oh_Heaven extends CardGame {
   	private Location trumpsActorLocation = new Location(50, 50);
 
   	// Make enforceRules static, so it applies to the whole game.
-  	private static boolean enforceRules = false;
+  	private static boolean enforceRules;
 
   	// Game always has 4 players according to the spec.
   	private Player[] players = new Player[nbPlayers];
@@ -153,12 +153,16 @@ public class Oh_Heaven extends CardGame {
 
 	Font bigFont = new Font("Serif", Font.BOLD, 36);
 
-	private void initPlayers() {
-		// Modify later to create players via properties loader.
-		players[0] = new InteractivePlayer(0);
-		players[0].setNbStartCards(nbStartCards);
-		for(int i = 1; i < nbPlayers; i++) {
-			players[i] = new NPC(i);
+	private void initPlayers(Properties properties) throws Exception
+	{
+		String strategy;
+		for(int i = 0; i < nbPlayers; i++) {
+			strategy = properties.getProperty("players." + i);
+			if (strategy.equals("human")){
+				players[i] = new InteractivePlayer(i);
+			} else{
+				players[i] = new NPC(i, strategy);
+			}
 			players[i].setNbStartCards(nbStartCards);
 		}
 		// Debugging code for checking type of players.
@@ -453,6 +457,7 @@ public class Oh_Heaven extends CardGame {
 		} else{
 			random = new Random(Integer.parseInt(seedStr));
 		}
+		enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
 	}
 
 }
