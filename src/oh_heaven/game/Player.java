@@ -14,6 +14,8 @@ public abstract class Player {
     private int tricksWon;
     private int playerBid;
 
+
+    private int nbStartCards;
     private Hand playerHand;
     protected Card selected = null;
 
@@ -95,7 +97,7 @@ public abstract class Player {
     }
 
     public void placeBid() {
-        this.playerBid = Oh_Heaven.nbStartCards / 4 + Oh_Heaven.random.nextInt(2);
+        this.playerBid = nbStartCards / 4 + Oh_Heaven.random.nextInt(2);
         System.out.println("Player " + this.playerNumber + " has bid " + this.playerBid);
     }
 
@@ -109,5 +111,14 @@ public abstract class Player {
         } else {
             this.playerBid += Oh_Heaven.random.nextBoolean() ? -1 : 1;
         }
+    }
+    public int getNbStartCards()
+    {
+        return nbStartCards;
+    }
+
+    public void setNbStartCards(int nbStartCards)
+    {
+        this.nbStartCards = nbStartCards;
     }
 }

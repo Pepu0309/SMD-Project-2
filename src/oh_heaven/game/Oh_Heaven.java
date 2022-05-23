@@ -12,21 +12,22 @@ import java.util.stream.Collectors;
 @SuppressWarnings("serial")
 public class Oh_Heaven extends CardGame {
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws Exception
 	{
 		// System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		final Properties properties;
 		if (args == null || args.length == 0) {
-			//properties = PropertiesLoader.loadPropertiesFile(null);
+			properties = PropertiesLoader.loadPropertiesFile(null);
 		} else {
-			//properties = PropertiesLoader.loadPropertiesFile(args[0]);
+			properties = PropertiesLoader.loadPropertiesFile(args[0]);
 		}
-		new Oh_Heaven();
+		new Oh_Heaven(properties);
 	}
 
-	public Oh_Heaven()
+	public Oh_Heaven(Properties properties) throws Exception
 	{
 		super(700, 700, 30);
+		initGameParam(properties);
 		setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
 		initPlayers();
@@ -88,8 +89,8 @@ public class Oh_Heaven extends CardGame {
   
   	final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
 
-  	static public final int seed = 30006;
-  	static final Random random = new Random(seed);
+  	static public int seed = 30006;
+  	static Random random = new Random(seed);
 
   	// return random Enum value
   	public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
@@ -115,8 +116,8 @@ public class Oh_Heaven extends CardGame {
 
   	private final String version = "1.0";
 	public static final int nbPlayers = 4;
- 	public static final int nbStartCards = 13;
- 	public final int nbRounds = 3;
+ 	public int nbStartCards;
+ 	public int nbRounds;
   	public static final int madeBidBonus = 10;
   	private final int handWidth = 400;
   	private final int trickWidth = 40;
@@ -155,8 +156,10 @@ public class Oh_Heaven extends CardGame {
 	private void initPlayers() {
 		// Modify later to create players via properties loader.
 		players[0] = new InteractivePlayer(0);
+		players[0].setNbStartCards(nbStartCards);
 		for(int i = 1; i < nbPlayers; i++) {
 			players[i] = new NPC(i);
+			players[i].setNbStartCards(nbStartCards);
 		}
 		// Debugging code for checking type of players.
 	//		for(int i = 0; i < nbPlayers; i++) {
@@ -434,4 +437,22 @@ public class Oh_Heaven extends CardGame {
 				}
 		}
 	}
+	private void initGameParam(Properties properties) throws Exception
+	{
+		nbRounds = Integer.parseInt(properties.getProperty("rounds"));
+		if (nbRounds < 1){
+			throw new Exception("Rounds property value is invalid");
+		}
+		nbStartCards = Integer.parseInt(properties.getProperty("nbStartCards"));
+		if (nbStartCards < 0 || nbStartCards > 13){
+			throw new Exception("Number of start cards property is invalid");
+		}
+		String seedStr = properties.getProperty("seed");
+		if (seedStr == null){
+			random = new Random();
+		} else{
+			random = new Random(Integer.parseInt(seedStr));
+		}
+	}
+
 }
