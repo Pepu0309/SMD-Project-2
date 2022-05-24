@@ -7,9 +7,9 @@ import java.util.Random;
 
 public class NPCRandomStrategy implements NPCStrategy{
 
-    public Card determineMove(Hand hand) {
+    // The random strategy simply ignores the leadingMove flag.
+    public Card determineMove(Hand hand, boolean leadingMove) {
         int x = Oh_Heaven.random.nextInt(hand.getNumberOfCards());
-        System.out.println(x);
         return hand.get(x);
     }
 

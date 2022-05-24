@@ -147,7 +147,7 @@ public class Oh_Heaven extends CardGame {
   	private static boolean enforceRules;
 
   	// Game always has 4 players according to the spec.
-  	private Player[] players = new Player[nbPlayers];
+  	public Player[] players = new Player[nbPlayers];
 
   	public void setStatus(String string) { setStatusText(string); }
 
@@ -161,7 +161,7 @@ public class Oh_Heaven extends CardGame {
 			if (strategy.equals("human")){
 				players[i] = new InteractivePlayer(i);
 			} else {
-				players[i] = new NPC(i, strategy);
+				players[i] = new NPC(i, strategy, players);
 			}
 			players[i].setNbStartCards(nbStartCards);
 		}
@@ -239,17 +239,20 @@ public class Oh_Heaven extends CardGame {
 
 	private void initBids(Suit trumps, int nextPlayer) {
 		int total = 0;
+
 		for (int i = nextPlayer; i < nextPlayer + nbPlayers; i++) {
 			 int iP = i % nbPlayers;
 			 players[iP].placeBid();
 //			 bids[iP] = nbStartCards / 4 + random.nextInt(2);
 			 total += players[iP].getPlayerBid();
-		 }
+		}
+
 		System.out.println("Total bid: " + total);
-		 if (total == nbStartCards) {  // Force last bid so not every bid possible
-			 int iP = (nextPlayer + nbPlayers) % nbPlayers;
-			 players[iP].enforcePlayerBid();
-		 }
+
+		if (total == nbStartCards) {  // Force last bid so not every bid possible
+			int iP = (nextPlayer + nbPlayers) % nbPlayers;
+			players[iP].enforcePlayerBid();
+		}
 		// for (int i = 0; i < nbPlayers; i++) {
 		// 	 bids[i] = nbStartCards / 4 + 1;
 		//  }
@@ -266,6 +269,7 @@ public class Oh_Heaven extends CardGame {
 		}
 
 		dealingOut(nbPlayers, nbStartCards);
+
 		for (int i = 0; i < nbPlayers; i++) {
 			players[i].sortHand();
 		}
@@ -340,10 +344,10 @@ public class Oh_Heaven extends CardGame {
 			curPlayerSelected = null;
 			// if (false) {
 			if (players[nextPlayer] instanceof InteractivePlayer) {  // Select lead depending on player type
-				getInteractivePlayerMove();
-			// Random player plays a random card
+				getInteractivePlayerMove(true);
+			// NPC plays their move
 			} else {
-				getNPCMove(nextPlayer);
+				getNPCMove(nextPlayer, true);
 			}
 			// Lead with curPlayerSelected card
 				trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -360,9 +364,9 @@ public class Oh_Heaven extends CardGame {
 				curPlayerSelected = null;
 				// if (false) {
 				if (players[nextPlayer] instanceof InteractivePlayer) {
-					getInteractivePlayerMove();
+					getInteractivePlayerMove(false);
 				} else {
-					getNPCMove(nextPlayer);
+					getNPCMove(nextPlayer, false);
 				}
 				// Follow with curPlayerSelected card
 					trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -405,13 +409,13 @@ public class Oh_Heaven extends CardGame {
 			nextPlayer = winner;
 			setStatusText("Player " + nextPlayer + " wins trick.");
 			// Call the wonTrick() method of the player that won the trick and increment their tricks won by 1.
-			players[nextPlayer].updateTricksWon(1);
+			players[nextPlayer].updateTricksWon(players[nextPlayer].getTricksWon() + 1);
 			updateScoreDisplay(nextPlayer);
 		}
 		removeActor(trumpsActor);
 	}
 
-	private void getInteractivePlayerMove() {
+	private void getInteractivePlayerMove(boolean leadingMove) {
 		// This is the interactive player, delay and setStatus are methods of GameGrid class so unlikely
 		// we can move them around.
 
@@ -424,16 +428,16 @@ public class Oh_Heaven extends CardGame {
 		setStatus("Player 0 double-click on card to lead.");
 		// This while loop constantly checks for the interactive playing double-clicking to play a move.
 		do {
-			curPlayerSelected = interactivePlayer.playMove();
+			curPlayerSelected = interactivePlayer.playMove(leadingMove);
 			delay(100);
 		} while (curPlayerSelected == null);
 	}
 
-	private void getNPCMove(int curNPCPlayerNum) {
+	private void getNPCMove(int curNPCPlayerNum, boolean leadingMove) {
 		setStatusText("Player " + curNPCPlayerNum + " thinking...");
 		delay(thinkingTime);
 		// This is NPC player picking their next move
-		curPlayerSelected = players[curNPCPlayerNum].playMove();
+		curPlayerSelected = players[curNPCPlayerNum].playMove(leadingMove);
 	}
 
 	public static void checkLegalMove(Card curPlayerSelected, Suit lead, Player playerPlayingMove) {

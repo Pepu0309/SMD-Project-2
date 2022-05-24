@@ -27,8 +27,9 @@ public class InteractivePlayer extends Player{
     }
 
     // selected should be set by the leftDoubleClicked function, so for the interactive player to play a move,
-    // selected is simply returned.
-    public Card playMove() {
+    // selected is simply returned. The interactive player ignores the leadingMove.
+    public Card playMove(boolean leadingMove) {
+        notifyMove(this.selected, leadingMove);
         return this.selected;
     }
 

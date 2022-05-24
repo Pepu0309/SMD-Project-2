@@ -9,10 +9,10 @@ public class NPC extends Player{
 
     public NPCStrategy strategy;
 
-    public NPC(int playerNumber, String NPCStrategyName) throws Exception {
+    public NPC(int playerNumber, String NPCStrategyName, Player[] players) throws Exception {
         super(playerNumber);
         try {
-            strategy = NPCStrategyFactory.getInstance().createStrategy(NPCStrategyName);
+            strategy = NPCStrategyFactory.getInstance().createStrategy(NPCStrategyName, players);
             if(strategy == null) {
                 throw new Exception("Invalid strategy");
             }
@@ -24,20 +24,14 @@ public class NPC extends Player{
 
     }
 
-    // Remove this when property loader is implemented and creation of strategy is done.
-    public static Card randomCard(Hand hand){
-        int x = Oh_Heaven.random.nextInt(hand.getNumberOfCards());
-        System.out.println(x);
-        return hand.get(x);
+    // The leadingMove boolean is passed to the strategy the NPC uses and might be used as part of determining
+    // the move.
+    public Card playMove(boolean leadingMove) {
+        this.selected = strategy.determineMove(super.getPlayerHand(), leadingMove);
+
+        notifyMove(this.selected, leadingMove);
+
+        return this.selected;
     }
 
-    public Card playMove() {
-        // selected = strategy.determineMove(Hand hand);
-        selected = randomCard(super.getPlayerHand());
-        return selected;
-    }
-
-    public NPCStrategy getStrategy() {
-        return strategy;
-    }
 }

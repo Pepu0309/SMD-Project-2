@@ -9,14 +9,14 @@ public class NPCStrategyFactory {
         return instance;
     }
 
-    public NPCStrategy createStrategy(String NPCStrategyName) {
+    public NPCStrategy createStrategy(String NPCStrategyName, Player[] players) {
         // Modify this later when legal and smart are created.
         if(NPCStrategyName.equals("random")) {
             return new NPCRandomStrategy();
         } else if(NPCStrategyName.equals("legal")) {
             return new NPCRandomStrategy();
         } else if (NPCStrategyName.equals("smart")) {
-            return new NPCRandomStrategy();
+            return new NPCSmartStrategy<>(players);
         } else {
            return null;
         }

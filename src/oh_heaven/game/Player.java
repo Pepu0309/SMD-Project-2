@@ -10,7 +10,7 @@ public abstract class Player extends Publisher {
 
     // "Players must not share information directly and must store their own information about the game they are
     // playing."
-    private PlayerIntValue playerScore;
+    private int playerScore;
     private int tricksWon;
     private int playerBid;
 
@@ -20,7 +20,7 @@ public abstract class Player extends Publisher {
 
     public Player(int playerNumber) {
         this.playerNumber = playerNumber;
-        this.playerScore.setValue(0);
+        this.playerScore = 0;
     }
 
     public void initialisePlayerHand(Deck deck) {
@@ -41,43 +41,56 @@ public abstract class Player extends Publisher {
         playerHand.draw();
     }
 
-    public abstract Card playMove();
+    public abstract Card playMove(boolean leadingMove);
+
+    public void notifyMove(Card cardPlayed, boolean leadingMove) {
+        String moveType;
+        if(leadingMove) {
+            moveType = "leading move";
+        } else {
+            moveType = "normal move";
+        }
+        for(int i = 0; i < super.getPlayerObservers().size(); i++) {
+            super.getPlayerObservers().get(i).update(this.playerNumber, this.selected, moveType);
+        }
+    }
 
     public void resetMove() {
         this.selected = null;
     }
 
     public Hand getPlayerHand() {
-        return playerHand;
+        return this.playerHand;
     }
 
     public int getPlayerNumber() {
-        return playerNumber;
+        return this.playerNumber;
     }
 
     public int getPlayerScore() {
-        return playerScore.getValue();
+        return this.playerScore;
     }
 
     public void updatePlayerScore() {
-        int updateVal;
         // Update the player's score by their tricksWon this round
-        updateVal = this.playerScore.getValue() + this.tricksWon;
+        this.playerScore += this.tricksWon;
 
         if(this.tricksWon == this.playerBid) {
-            updateVal = this.playerScore.getValue() + Oh_Heaven.madeBidBonus;
+            this.playerScore += Oh_Heaven.madeBidBonus;
         }
 
-        this.playerScore.updateValue(updateVal, "score");
-
+        for(int i = 0; i < super.getPlayerObservers().size(); i++) {
+            super.getPlayerObservers().get(i).update(this.playerNumber, this.playerScore, "score");
+        }
     }
 
     public int getTricksWon() {
-        return tricksWon;
+        return this.tricksWon;
     }
 
     public void updateTricksWon(int tricksWon) {
         this.tricksWon = tricksWon;
+
         for(int i = 0; i < super.getPlayerObservers().size(); i++) {
             super.getPlayerObservers().get(i).update(this.playerNumber, this.tricksWon, "tricks");
         }
@@ -85,7 +98,11 @@ public abstract class Player extends Publisher {
 
     public void placeBid() {
         this.playerBid = nbStartCards / 4 + Oh_Heaven.random.nextInt(2);
+
+        // This print statement is from base package
         System.out.println("Player " + this.playerNumber + " has bid " + this.playerBid);
+
+        this.notifyBid();
     }
 
     public int getPlayerBid() {
@@ -98,12 +115,19 @@ public abstract class Player extends Publisher {
         } else {
             this.playerBid += Oh_Heaven.random.nextBoolean() ? -1 : 1;
         }
+
+        this.notifyBid();
+    }
+
+    private void notifyBid() {
+        for(int i = 0; i < super.getPlayerObservers().size(); i++) {
+            super.getPlayerObservers().get(i).update(this.playerNumber, this.playerBid, "bids");
+        }
     }
 
     public void setNbStartCards(int nbStartCards)
     {
         this.nbStartCards = nbStartCards;
     }
-
 
 }
