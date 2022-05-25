@@ -344,10 +344,10 @@ public class Oh_Heaven extends CardGame {
 			curPlayerSelected = null;
 			// if (false) {
 			if (players[nextPlayer] instanceof InteractivePlayer) {  // Select lead depending on player type
-				getInteractivePlayerMove(true);
+				getInteractivePlayerMove(true, trumps);
 			// NPC plays their move
 			} else {
-				getNPCMove(nextPlayer, true);
+				getNPCMove(nextPlayer, true, trumps);
 			}
 			// Lead with curPlayerSelected card
 				trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -364,9 +364,9 @@ public class Oh_Heaven extends CardGame {
 				curPlayerSelected = null;
 				// if (false) {
 				if (players[nextPlayer] instanceof InteractivePlayer) {
-					getInteractivePlayerMove(false);
+					getInteractivePlayerMove(false, trumps);
 				} else {
-					getNPCMove(nextPlayer, false);
+					getNPCMove(nextPlayer, false, trumps);
 				}
 				// Follow with curPlayerSelected card
 					trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -415,7 +415,7 @@ public class Oh_Heaven extends CardGame {
 		removeActor(trumpsActor);
 	}
 
-	private void getInteractivePlayerMove(boolean leadingMove) {
+	private void getInteractivePlayerMove(boolean leadingMove, Suit trumpSuit) {
 		// This is the interactive player, delay and setStatus are methods of GameGrid class so unlikely
 		// we can move them around.
 
@@ -428,16 +428,16 @@ public class Oh_Heaven extends CardGame {
 		setStatus("Player 0 double-click on card to lead.");
 		// This while loop constantly checks for the interactive playing double-clicking to play a move.
 		do {
-			curPlayerSelected = interactivePlayer.playMove(leadingMove);
+			curPlayerSelected = interactivePlayer.playMove(leadingMove, trumpSuit);
 			delay(100);
 		} while (curPlayerSelected == null);
 	}
 
-	private void getNPCMove(int curNPCPlayerNum, boolean leadingMove) {
+	private void getNPCMove(int curNPCPlayerNum, boolean leadingMove, Suit trumpSuit) {
 		setStatusText("Player " + curNPCPlayerNum + " thinking...");
 		delay(thinkingTime);
 		// This is NPC player picking their next move
-		curPlayerSelected = players[curNPCPlayerNum].playMove(leadingMove);
+		curPlayerSelected = players[curNPCPlayerNum].playMove(leadingMove, trumpSuit);
 	}
 
 	public static void checkLegalMove(Card curPlayerSelected, Suit lead, Player playerPlayingMove) {

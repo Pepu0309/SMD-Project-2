@@ -4,5 +4,5 @@ import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 
 public interface NPCStrategy {
-    public Card determineMove(Hand hand, boolean leadingMove);
+    public Card determineMove(Hand hand, boolean leadingMove, Oh_Heaven.Suit trumpSuit);
 }

@@ -41,7 +41,7 @@ public abstract class Player extends Publisher {
         playerHand.draw();
     }
 
-    public abstract Card playMove(boolean leadingMove);
+    public abstract Card playMove(boolean leadingMove, Oh_Heaven.Suit trumpSuit);
 
     public void notifyMove(Card cardPlayed, boolean leadingMove) {
         String moveType;
@@ -90,7 +90,6 @@ public abstract class Player extends Publisher {
 
     public void updateTricksWon(int tricksWon) {
         this.tricksWon = tricksWon;
-
         for(int i = 0; i < super.getPlayerObservers().size(); i++) {
             super.getPlayerObservers().get(i).update(this.playerNumber, this.tricksWon, "tricks");
         }

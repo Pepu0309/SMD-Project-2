@@ -19,7 +19,7 @@ public class NPCLegalStrategy<T> implements NPCStrategy, PlayerObserver<T>{
 
     // Legal strategy will play a card of the same suit as the leading suit if it has at least one card
     // of the same suit, otherwise it will play a random card
-    public Card determineMove(Hand hand, boolean leadingMove) {
+    public Card determineMove(Hand hand, boolean leadingMove, Oh_Heaven.Suit trumpSuit) {
         Card move;
         // extracting all the players card
         ArrayList<Card> sameSuit = hand.getCardsWithSuit(curLeadingMove.getSuit());
