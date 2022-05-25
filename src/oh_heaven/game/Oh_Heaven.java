@@ -156,14 +156,21 @@ public class Oh_Heaven extends CardGame {
 	private void initPlayers(Properties properties) throws Exception
 	{
 		String strategy;
-		for(int i = 0; i < nbPlayers; i++) {
+		for (int i = 0; i < nbPlayers; i++) {
 			strategy = properties.getProperty("players." + i);
 			if (strategy.equals("human")){
 				players[i] = new InteractivePlayer(i);
 			} else {
-				players[i] = new NPC(i, strategy, players);
+				players[i] = new NPC(i);
 			}
 			players[i].setNbStartCards(nbStartCards);
+		}
+		for (int i = 0; i < nbPlayers; i++) {
+			strategy = properties.getProperty("players." + i);
+			if (players[i] instanceof NPC) {
+				NPC curNPC = (NPC) players[i];
+				curNPC.initStrategy(strategy, players);
+			}
 		}
 
 //		// Just for testing

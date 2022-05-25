@@ -9,8 +9,11 @@ public class NPC extends Player {
 
     public NPCStrategy strategy;
 
-    public NPC(int playerNumber, String NPCStrategyName, Player[] players) throws Exception {
+    public NPC(int playerNumber) throws Exception {
         super(playerNumber);
+    }
+
+    public void initStrategy(String NPCStrategyName, Player[] players) {
         try {
             strategy = NPCStrategyFactory.getInstance().createStrategy(NPCStrategyName, players);
             if(strategy == null) {
@@ -21,7 +24,6 @@ public class NPC extends Player {
             System.out.println(e);
             System.exit(0);
         }
-
     }
 
     // The leadingMove boolean is passed to the strategy the NPC uses and might be used as part of determining

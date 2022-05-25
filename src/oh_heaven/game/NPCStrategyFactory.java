@@ -14,7 +14,7 @@ public class NPCStrategyFactory {
         if(NPCStrategyName.equals("random")) {
             return new NPCRandomStrategy();
         } else if(NPCStrategyName.equals("legal")) {
-            return new NPCRandomStrategy();
+            return new NPCLegalStrategy<>(players);
         } else if (NPCStrategyName.equals("smart")) {
             return new NPCSmartStrategy<>(players);
         } else {

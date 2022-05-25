@@ -12,8 +12,7 @@ public class NPCSmartStrategy<T> implements NPCStrategy, PlayerObserver<T>{
     int[] playerScores = new int[numPlayers];
     int[] playersTricksWon = new int[numPlayers];
     int[] playerBids = new int[numPlayers];
-
-    ArrayList<Card>[] playerHasPlayed;
+    ArrayList<ArrayList<Card>> playerHasPlayed = new ArrayList<ArrayList<Card>>();
     Card curLeadingMove;
 
     public NPCSmartStrategy(Player[] players) {
@@ -26,7 +25,7 @@ public class NPCSmartStrategy<T> implements NPCStrategy, PlayerObserver<T>{
 
     public void initPlayerHasPlayed() {
         for(int i = 0; i < numPlayers; i++) {
-            playerHasPlayed[i] = new ArrayList<Card>();
+            playerHasPlayed.add(new ArrayList<Card>());
         }
     }
 
@@ -34,7 +33,7 @@ public class NPCSmartStrategy<T> implements NPCStrategy, PlayerObserver<T>{
     public Card determineMove(Hand hand, boolean leadingMove, Oh_Heaven.Suit trumpSuit) {
         Card move = null;
         // sorting hand in descending order of rank
-        hand.reverseSort(Hand.SortType.RANKPRIORITY, false);
+        hand.sort(Hand.SortType.RANKPRIORITY, false);
         // if leading move, play the highest value not trump suit card, to increase odds of winning
         // trick and prevent the high value card from being wasted in a trick where its suit is not the
         // lead suit
@@ -85,10 +84,10 @@ public class NPCSmartStrategy<T> implements NPCStrategy, PlayerObserver<T>{
         } else if (type.equals("bids")) {
             playerBids[playerNum] = (int) valueToUpdate;
         } else if (type.equals("normal move")) {
-            playerHasPlayed[playerNum].add((Card) valueToUpdate);
+            playerHasPlayed.get(playerNum).add((Card) valueToUpdate);
         } else if (type.equals("leading move")) {
             curLeadingMove = (Card) valueToUpdate;
-            playerHasPlayed[playerNum].add((Card) valueToUpdate);
+            playerHasPlayed.get(playerNum).add((Card) valueToUpdate);
         }
     }
 }

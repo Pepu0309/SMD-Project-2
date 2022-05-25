@@ -21,13 +21,12 @@ public class NPCLegalStrategy<T> implements NPCStrategy, PlayerObserver<T>{
     // of the same suit, otherwise it will play a random card
     public Card determineMove(Hand hand, boolean leadingMove, Oh_Heaven.Suit trumpSuit) {
         Card move;
-        // extracting all the players card
-        ArrayList<Card> sameSuit = hand.getCardsWithSuit(curLeadingMove.getSuit());
-        if (! sameSuit.isEmpty()) {
-            move = Oh_Heaven.randomCard(sameSuit);
-        }
-        else {
-            move = Oh_Heaven.randomCard(hand);
+        move = Oh_Heaven.randomCard(hand);
+        if (! leadingMove) {
+            ArrayList<Card> sameSuit = hand.getCardsWithSuit(curLeadingMove.getSuit());
+            if (! sameSuit.isEmpty()) {
+                move = Oh_Heaven.randomCard(sameSuit);
+            }
         }
         return move;
     }
