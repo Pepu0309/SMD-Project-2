@@ -112,7 +112,7 @@ public class Oh_Heaven extends CardGame {
 
   	public boolean rankGreater(Card card1, Card card2) {
 		  return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
- 	 }
+	}
 
   	private final String version = "1.0";
 	public static final int nbPlayers = 4;
