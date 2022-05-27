@@ -89,8 +89,8 @@ public class Oh_Heaven extends CardGame {
   
   	final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
 
-  	static public int seed = 30006;
-  	static Random random = new Random(seed);
+  	static public int seed;
+  	static Random random;
 
   	// return random Enum value
   	public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
