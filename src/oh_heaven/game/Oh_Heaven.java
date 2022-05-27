@@ -89,8 +89,8 @@ public class Oh_Heaven extends CardGame {
   
   	final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
 
-  	static public int seed;
-  	static Random random = new Random();
+  	static public int seed = 30006;
+  	static Random random = new Random(seed);
 
   	// return random Enum value
   	public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
@@ -473,15 +473,12 @@ public class Oh_Heaven extends CardGame {
 		if (nbStartCards < 0 || nbStartCards > 13){
 			throw new Exception("Number of start cards property is invalid");
 		}
-		/*
 		String seedStr = properties.getProperty("seed");
 		if (seedStr == null){
 			random = new Random();
 		} else{
 			random = new Random(Integer.parseInt(seedStr));
 		}
-		*/
-
 		enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
 	}
 
