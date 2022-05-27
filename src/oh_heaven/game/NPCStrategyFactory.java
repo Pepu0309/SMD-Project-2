@@ -10,7 +10,9 @@ public class NPCStrategyFactory {
     }
 
     public NPCStrategy createStrategy(String NPCStrategyName, Player[] players) {
-        // Modify this later when legal and smart are created.
+        // Creates the appropriate strategy according to the name and forwards the Player array so the strategies
+        // can subscribe and observe to other players to get the information they need instead of accessing a shared
+        // pool as per the requirements of NERDI.
         if(NPCStrategyName.equals("random")) {
             return new NPCRandomStrategy();
         } else if(NPCStrategyName.equals("legal")) {
