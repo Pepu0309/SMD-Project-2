@@ -43,7 +43,7 @@ public abstract class Player extends Publisher {
 
     public abstract Card playMove(boolean leadingMove, Oh_Heaven.Suit trumpSuit);
 
-    public void notifyMove(Card cardPlayed, boolean leadingMove) {
+    public void notifyMove(boolean leadingMove) {
         String moveType;
         if(leadingMove) {
             moveType = "leading move";

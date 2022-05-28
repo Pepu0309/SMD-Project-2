@@ -32,7 +32,7 @@ public class NPC extends Player {
     public Card playMove(boolean leadingMove, Oh_Heaven.Suit trumpSuit) {
 
         this.selected = strategy.determineMove(super.getPlayerHand(), leadingMove, trumpSuit);
-        notifyMove(this.selected, leadingMove);
+        notifyMove(leadingMove);
         return this.selected;
 
     }
