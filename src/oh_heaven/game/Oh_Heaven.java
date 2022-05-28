@@ -89,7 +89,7 @@ public class Oh_Heaven extends CardGame {
   
   	final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
 
-  	static public int seed;
+  	static public int seed = 30006;
   	static Random random;
 
   	// return random Enum value
@@ -116,8 +116,8 @@ public class Oh_Heaven extends CardGame {
 
   	private final String version = "1.0";
 	public static final int nbPlayers = 4;
- 	public int nbStartCards;
- 	public int nbRounds;
+ 	public int nbStartCards = 13;
+ 	public int nbRounds = 3;
   	public static final int madeBidBonus = 10;
   	private final int handWidth = 400;
   	private final int trickWidth = 40;
@@ -144,7 +144,7 @@ public class Oh_Heaven extends CardGame {
   	private Location trumpsActorLocation = new Location(50, 50);
 
   	// Make enforceRules static, so it applies to the whole game.
-  	private static boolean enforceRules;
+  	private static boolean enforceRules = true;
 
   	// Game always has 4 players according to the spec.
   	private Player[] players = new Player[nbPlayers];
@@ -420,7 +420,8 @@ public class Oh_Heaven extends CardGame {
 		if (seedStr == null){
 			random = new Random();
 		} else{
-			random = new Random(Integer.parseInt(seedStr));
+			seed = Integer.parseInt(seedStr);
+			random = new Random(seed);
 		}
 		enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
 	}
