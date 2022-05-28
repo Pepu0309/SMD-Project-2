@@ -32,7 +32,8 @@ public class Oh_Heaven extends CardGame {
 		setStatusText("Initializing...");
 		initPlayers(properties);
 		initScoresDisplay();
-		//initScore();
+
+		// initScore() functionality handled by constructor of Player.
 
 		for (int i=0; i <nbRounds; i++) {
 			initTricks();
@@ -46,18 +47,17 @@ public class Oh_Heaven extends CardGame {
 		}
 
 		// Determining the highest score out of all the players
-		int maxScore = 0, curPlayerScore = 0;
+		int maxScore = 0;
 		for (int i = 0; i <nbPlayers; i++) {
-			curPlayerScore = players[i].getPlayerScore();
-			if (curPlayerScore > maxScore) {
-				maxScore = curPlayerScore;
+			if (players[i].getPlayerScore() > maxScore) {
+				maxScore = players[i].getPlayerScore();
 			}
 		}
 
 		// Determine all the winners if there is a tie
 		Set <Integer> winners = new HashSet<Integer>();
 		for (int i = 0; i < nbPlayers; i++) {
-			if (curPlayerScore == maxScore) {
+			if (players[i].getPlayerScore() == maxScore) {
 				winners.add(i);
 			}
 		}
@@ -90,7 +90,7 @@ public class Oh_Heaven extends CardGame {
   	final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
 
   	static public int seed;
-  	static Random random = new Random();
+  	static Random random;
 
   	// return random Enum value
   	public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
@@ -147,7 +147,7 @@ public class Oh_Heaven extends CardGame {
   	private static boolean enforceRules;
 
   	// Game always has 4 players according to the spec.
-  	public Player[] players = new Player[nbPlayers];
+  	private Player[] players = new Player[nbPlayers];
 
   	public void setStatus(String string) { setStatusText(string); }
 
@@ -156,6 +156,7 @@ public class Oh_Heaven extends CardGame {
 	private void initPlayers(Properties properties) throws Exception
 	{
 		String strategy;
+		// Create the players first.
 		for (int i = 0; i < nbPlayers; i++) {
 			strategy = properties.getProperty("players." + i);
 			if (strategy.equals("human")){
@@ -165,6 +166,9 @@ public class Oh_Heaven extends CardGame {
 			}
 			players[i].setNbStartCards(nbStartCards);
 		}
+
+		// Then according to the strategy of each player, have the strategy observe what it needs to (if it
+		// needs to observe anything).
 		for (int i = 0; i < nbPlayers; i++) {
 			strategy = properties.getProperty("players." + i);
 			if (players[i] instanceof NPC) {
@@ -172,35 +176,7 @@ public class Oh_Heaven extends CardGame {
 				curNPC.initStrategy(strategy, players);
 			}
 		}
-
-//		// Just for testing
-//		players[1] = new NPC(1, "smart");
-//		for(int i = 0; i < nbPlayers; i++) {
-//			if (i == 1) {
-//				continue;
-//			}
-//			players[i].addObserver();
-//		}
-
-
-		// Debugging code for checking type of players.
-	//		for(int i = 0; i < nbPlayers; i++) {
-	//			if(players[i] instanceof InteractivePlayer) {
-	//				System.out.println("player " + i + " is an instance of InteractivePlayer");
-	//			} else if (players[i] instanceof NPC) {
-	//				System.out.println("player " + i + " is an instance of NPC");
-	//			}
-	//		}
 	}
-
-//	private void initScore() {
-//		 for (int i = 0; i < nbPlayers; i++) {
-//			 // scores[i] = 0;
-//			 String text = "[" + String.valueOf(scores[i]) + "]" + String.valueOf(tricks[i]) + "/" + String.valueOf(bids[i]);
-//			 scoreActors[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
-//			 addActor(scoreActors[i], scoreLocations[i]);
-//		 }
-//	  }
 
 	// Update the display of the score and the tricks won of the player corresponding to the number passed in as '
 	// argument to the method.
@@ -229,10 +205,6 @@ public class Oh_Heaven extends CardGame {
 	// Don't need to update this method yet, because players will be storing their own tricks and bids later
 	private void updateScores() {
 		 for (int i = 0; i < nbPlayers; i++) {
-//			 scores[i] += tricks[i];
-//			 if (tricks[i] == bids[i]) {
-//				 scores[i] += madeBidBonus;
-//			 }
 			 players[i].updatePlayerScore();
 		 }
 	}
@@ -250,7 +222,6 @@ public class Oh_Heaven extends CardGame {
 		for (int i = nextPlayer; i < nextPlayer + nbPlayers; i++) {
 			 int iP = i % nbPlayers;
 			 players[iP].placeBid();
-//			 bids[iP] = nbStartCards / 4 + random.nextInt(2);
 			 total += players[iP].getPlayerBid();
 		}
 
@@ -266,10 +237,6 @@ public class Oh_Heaven extends CardGame {
 	 }
 
 	private void initRound() {
-		//hands = new Hand[nbPlayers];
-//		for (int i = 0; i < nbPlayers; i++) {
-//			   hands[i] = new Hand(deck);
-//		}
 		// Initialise each player's hand this round using the deck.
 		for (int i = 0; i < nbPlayers; i++) {
 			players[i].initialisePlayerHand(deck);
@@ -280,25 +247,16 @@ public class Oh_Heaven extends CardGame {
 		for (int i = 0; i < nbPlayers; i++) {
 			players[i].sortHand();
 		}
-		// Set up human player for interaction
-//		CardListener cardListener = new CardAdapter()  // Human Player plays card
-//				{
-//				  public void leftDoubleClicked(Card card) { selected = card; hands[0].setTouchEnabled(false); }
-//				};
-//		hands[0].addCardListener(cardListener);
-		// graphics
 
-		// Change this to have the player store their own location later.
+		// graphics
 		RowLayout[] layouts = new RowLayout[nbPlayers];
 		for (int i = 0; i < nbPlayers; i++) {
 			layouts[i] = new RowLayout(handLocations[i], handWidth);
 			layouts[i].setRotationAngle(90 * i);
-			//layouts[i].setStepDelay(10);
-//			hands[i].setView(this, layouts[i]);
-//			hands[i].setTargetArea(new TargetArea(trickLocation));
-//			hands[i].draw();
+			// layouts[i].setStepDelay(10);
+
 			// Game assigns each player a location and a layout and tells players to display their hand at the
-			// location specified. Player stores their own information.
+			// location specified.
 			players[i].displayHand(this, layouts[i], new TargetArea(trickLocation));
 		}
 //	    for (int i = 1; i < nbPlayers; i++) // This code can be used to visually hide the cards in a hand (make them face down)
@@ -380,20 +338,20 @@ public class Oh_Heaven extends CardGame {
 					trick.draw();
 					curPlayerSelected.setVerso(false);  // In case it is upside down
 					// Check: Following card must follow suit if possible
-					checkLegalMove(curPlayerSelected, lead, players[nextPlayer]);
-//					if (curPlayerSelected.getSuit() != lead && players[nextPlayer].getPlayerHand().getNumberOfCardsWithSuit(lead) > 0) {
-//						 // Rule violation
-//						 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + curPlayerSelected;
-//						 System.out.println(violation);
-//						 if (enforceRules)
-//							 try {
-//								 throw(new BrokeRuleException(violation));
-//								} catch (BrokeRuleException e) {
-//									e.printStackTrace();
-//									System.out.println("A cheating player spoiled the game!");
-//									System.exit(0);
-//								}
-//					 }
+					if (curPlayerSelected.getSuit() != lead && players[nextPlayer].getPlayerHand().getNumberOfCardsWithSuit(lead) > 0) {
+						 // Rule violation
+						 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + curPlayerSelected;
+						 System.out.println(violation);
+						 if (enforceRules)
+							 try {
+								 throw(new BrokeRuleException(violation));
+								} catch (BrokeRuleException e) {
+									e.printStackTrace();
+									System.out.println("A cheating player spoiled the game!");
+									System.exit(0);
+								}
+					 }
+
 					// End Check
 					 curPlayerSelected.transfer(trick, true); // transfer to trick (includes graphic effect)
 					 System.out.println("winning: " + winningCard);
@@ -447,22 +405,6 @@ public class Oh_Heaven extends CardGame {
 		curPlayerSelected = players[curNPCPlayerNum].playMove(leadingMove, trumpSuit);
 	}
 
-	public static void checkLegalMove(Card curPlayerSelected, Suit lead, Player playerPlayingMove) {
-		if (curPlayerSelected.getSuit() != lead && playerPlayingMove.getPlayerHand().getNumberOfCardsWithSuit(lead) > 0) {
-			// Rule violation
-			String violation = "Follow rule broken by player " + playerPlayingMove.getPlayerNumber() +
-					" attempting to play " + curPlayerSelected;
-			System.out.println(violation);
-			if (enforceRules)
-				try {
-					throw(new BrokeRuleException(violation));
-				} catch (BrokeRuleException e) {
-					e.printStackTrace();
-					System.out.println("A cheating player spoiled the game!");
-					System.exit(0);
-				}
-		}
-	}
 	private void initGameParam(Properties properties) throws Exception
 	{
 		nbRounds = Integer.parseInt(properties.getProperty("rounds"));
@@ -473,15 +415,12 @@ public class Oh_Heaven extends CardGame {
 		if (nbStartCards < 0 || nbStartCards > 13){
 			throw new Exception("Number of start cards property is invalid");
 		}
-		/*
 		String seedStr = properties.getProperty("seed");
 		if (seedStr == null){
 			random = new Random();
 		} else{
 			random = new Random(Integer.parseInt(seedStr));
 		}
-		*/
-
 		enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
 	}
 
