@@ -33,7 +33,6 @@ public class NPCSmartStrategy<T> implements NPCStrategy, PlayerObserver<T>{
         }
     }
 
-    // Smart strategy will choose to use whether it's move is leading or not to determine what card to play.
     public Card determineMove(Hand hand, boolean leadingMove, Oh_Heaven.Suit trumpSuit) {
 
         this.trumpSuit = trumpSuit;
@@ -72,7 +71,6 @@ public class NPCSmartStrategy<T> implements NPCStrategy, PlayerObserver<T>{
                 }
             }
         }
-        System.out.println(move.toString() + ": " + move.getRankId());
         return move;
     }
 
@@ -133,8 +131,8 @@ public class NPCSmartStrategy<T> implements NPCStrategy, PlayerObserver<T>{
             return true;
         } else if (! card1.getSuit().equals(trumpSuit) && card2.getSuit().equals(trumpSuit)) {
             return false;
-        // either both are the trump suit or both are not the trump suit, highest rank card wins
-        // highest rank card starts at 0, so using less than logical operator
+        // either both are the trump suit or neither are the trump suit, highest rank card wins
+        // highest rank card starts at 0, so using '<' logical operator
         } else {
             return card1.getRankId() < card2.getRankId();
         }
@@ -153,6 +151,7 @@ public class NPCSmartStrategy<T> implements NPCStrategy, PlayerObserver<T>{
         return true;
     }
 
+    // store updates from other players via observer pattern
     public void update(int playerNum, T valueToUpdate, String type) {
         if (type.equals("score")) {
             playerScores[playerNum] = (int) valueToUpdate;

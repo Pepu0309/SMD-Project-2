@@ -156,7 +156,8 @@ public class Oh_Heaven extends CardGame {
 	private void initPlayers(Properties properties) throws Exception
 	{
 		String strategy;
-		// Create the players first.
+
+		// Construct all the player objects for the game according to properties
 		for (int i = 0; i < nbPlayers; i++) {
 			strategy = properties.getProperty("players." + i);
 			if (strategy.equals("human")){
@@ -167,8 +168,8 @@ public class Oh_Heaven extends CardGame {
 			players[i].setNbStartCards(nbStartCards);
 		}
 
-		// Then according to the strategy of each player, have the strategy observe what it needs to (if it
-		// needs to observe anything).
+		// Then according to the strategy of each player determined by the properties file, have the strategy observe
+		// what it needs to (if it needs to observe anything).
 		for (int i = 0; i < nbPlayers; i++) {
 			strategy = properties.getProperty("players." + i);
 			if (players[i] instanceof NPC) {
