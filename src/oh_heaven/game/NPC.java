@@ -13,6 +13,7 @@ public class NPC extends Player {
         super(playerNumber);
     }
 
+    // set the strategy for this NPC instance
     public void initStrategy(String NPCStrategyName, Player[] players) {
         try {
             strategy = NPCStrategyFactory.getInstance().createStrategy(NPCStrategyName, players);
