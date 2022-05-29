@@ -7,9 +7,8 @@ import java.util.ArrayList;
 
 public class NPCLegalStrategy<T> implements NPCStrategy, PlayerObserver<T>{
 
-    int numPlayers = Oh_Heaven.nbPlayers;
-
-    Card curLeadingMove;
+    private int numPlayers = Oh_Heaven.nbPlayers;
+    private Oh_Heaven.Suit leadSuit;
 
     public NPCLegalStrategy(Player[] players) {
         for(int i = 0; i < numPlayers; i++) {
@@ -23,7 +22,7 @@ public class NPCLegalStrategy<T> implements NPCStrategy, PlayerObserver<T>{
         Card move;
         move = Oh_Heaven.randomCard(hand);
         if (! leadingMove) {
-            ArrayList<Card> sameSuit = hand.getCardsWithSuit(curLeadingMove.getSuit());
+            ArrayList<Card> sameSuit = hand.getCardsWithSuit(leadSuit);
             if (! sameSuit.isEmpty()) {
                 move = Oh_Heaven.randomCard(sameSuit);
             }
@@ -33,7 +32,7 @@ public class NPCLegalStrategy<T> implements NPCStrategy, PlayerObserver<T>{
 
     public void update(int playerNum, T valueToUpdate, String type) {
         if (type.equals("leading move")) {
-            curLeadingMove = (Card) valueToUpdate;
+            leadSuit = (Oh_Heaven.Suit) ((Card) valueToUpdate).getSuit();
         }
     }
 }

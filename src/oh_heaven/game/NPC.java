@@ -14,9 +14,9 @@ public class NPC extends Player {
     }
 
     // Set the strategy for this NPC instance
-    public void initStrategy(String NPCStrategyName, Player[] players) {
+    public void initStrategy(String NPCStrategyName, Player[] players, int playerID) {
         try {
-            strategy = NPCStrategyFactory.getInstance().createStrategy(NPCStrategyName, players);
+            strategy = NPCStrategyFactory.getInstance().createStrategy(NPCStrategyName, players, playerID);
             if(strategy == null) {
                 throw new Exception("Invalid strategy");
             }

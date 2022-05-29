@@ -7,27 +7,28 @@ import java.util.ArrayList;
 
 public class NPCSmartStrategy<T> implements NPCStrategy, PlayerObserver<T>{
 
-    int numPlayers = Oh_Heaven.nbPlayers;
+    private int numPlayers = Oh_Heaven.nbPlayers;
+    private int playerID;
 
-    int[] playerScores = new int[numPlayers];
-    int[] playersTricksWon = new int[numPlayers];
-    int[] playerBids = new int[numPlayers];
-    Card[] curTrick = new Card[numPlayers];
-    int nbCardsCurTrick = 0;
-    ArrayList<ArrayList<Card>> playerHasPlayed = new ArrayList<ArrayList<Card>>();
+    private int[] playerScores = new int[numPlayers];
+    private int[] playersTricksWon = new int[numPlayers];
+    private int[] playerBids = new int[numPlayers];
+    private Card[] curTrick = new Card[numPlayers];
+    private int nbCardsCurTrick = 0;
+    private ArrayList<ArrayList<Card>> playerHasPlayed = new ArrayList<ArrayList<Card>>();
 
-    Oh_Heaven.Suit trumpSuit;
-    Oh_Heaven.Suit leadSuit;
+    private Oh_Heaven.Suit trumpSuit;
+    private Oh_Heaven.Suit leadSuit;
 
-    public NPCSmartStrategy(Player[] players) {
+    public NPCSmartStrategy(Player[] players, int playerID) {
         for(int i = 0; i < numPlayers; i++) {
             players[i].addObserver(this);
         }
-
+        this.playerID = playerID;
         initPlayerHasPlayed();
     }
 
-    public void initPlayerHasPlayed() {
+    private void initPlayerHasPlayed() {
         for(int i = 0; i < numPlayers; i++) {
             playerHasPlayed.add(new ArrayList<Card>());
         }

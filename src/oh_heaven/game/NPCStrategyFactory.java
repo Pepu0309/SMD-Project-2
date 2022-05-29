@@ -1,6 +1,7 @@
 package oh_heaven.game;
 
 public class NPCStrategyFactory {
+
     private static NPCStrategyFactory instance = new NPCStrategyFactory();
 
     private NPCStrategyFactory() {};
@@ -9,7 +10,7 @@ public class NPCStrategyFactory {
         return instance;
     }
 
-    public NPCStrategy createStrategy(String NPCStrategyName, Player[] players) {
+    public NPCStrategy createStrategy(String NPCStrategyName, Player[] players, int playerID) {
         // Creates the appropriate strategy according to the name and forwards the Player array so the strategies
         // can subscribe and observe to other players to get the information they need instead of accessing a shared
         // pool as per the requirements of NERDI.
@@ -18,7 +19,7 @@ public class NPCStrategyFactory {
         } else if(NPCStrategyName.equals("legal")) {
             return new NPCLegalStrategy<>(players);
         } else if (NPCStrategyName.equals("smart")) {
-            return new NPCSmartStrategy<>(players);
+            return new NPCSmartStrategy<>(players, playerID);
         } else {
            return null;
         }

@@ -174,7 +174,7 @@ public class Oh_Heaven extends CardGame {
 			strategy = properties.getProperty("players." + i);
 			if (players[i] instanceof NPC) {
 				NPC curNPC = (NPC) players[i];
-				curNPC.initStrategy(strategy, players);
+				curNPC.initStrategy(strategy, players, i);
 			}
 		}
 	}
